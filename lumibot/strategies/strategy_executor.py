@@ -786,8 +786,7 @@ class StrategyExecutor(Thread):
             self._before_starting_trading()
 
             time_to_close = self.broker.get_time_to_close()
-            print("I am here is_247 time to close 1")
-            print(time_to_close)
+  
 
         if not self.strategy.is_backtesting:
             # Start APScheduler for the trading session.
@@ -858,8 +857,6 @@ class StrategyExecutor(Thread):
 
                 # Check if the strategy is 24/7 or if it's time to stop.
                 is_247_or_should_we_stop = is_247 or should_we_stop
-                print("is_247_or_should_we_stop")
-                print(is_247_or_should_we_stop)
 
                 if not jobs:
                     print("Breaking loop because no jobs.")
