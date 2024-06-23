@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Unit Test modules
+pytest
+pytest-mock
+coverage
+
+# Linting modules
+ruff
+isort
+
+# Security checkers
+bandit
+safety
+
+# Secret Storage
+python-dotenv
