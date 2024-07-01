@@ -732,7 +732,6 @@ class StrategyExecutor(Thread):
         minutes, hours.
         """
 
-        print("I am here hahah, 1 did run")
         has_data_source = hasattr(self.broker, "_data_source")
         is_247 = hasattr(self.broker, "market") and self.broker.market == "24/7"
 
@@ -746,7 +745,7 @@ class StrategyExecutor(Thread):
             and self.broker.data_source.SOURCE == "PANDAS"
             and self.broker.data_source._timestep == "day"
         ):
-            print("I am here pandas")
+            print("I am here pandas and day......... Jingfeng")
             if self.broker.data_source._iter_count is None:
                 # Get the first date from _date_index equal or greater than
                 # backtest start date.
@@ -791,21 +790,32 @@ class StrategyExecutor(Thread):
         if not self.strategy.is_backtesting:
             # Start APScheduler for the trading session.
             if not self.scheduler.running:
-                self.scheduler.start()
 
-                # Choose the cron trigger for the strategy based on the desired sleep time.
-                chosen_trigger = self.calculate_strategy_trigger(
-                    force_start_immediately=self.strategy.force_start_immediately
-                )
+                jobs = self.scheduler.get_jobs()
+                if not jobs:
+                    self.scheduler.start()
 
-                # Add the on_trading_iteration method to the scheduler with the chosen trigger.
-                self.scheduler.add_job(
-                    self._on_trading_iteration,
-                    chosen_trigger,
-                    id="OTIM",
-                    name="On Trading Iteration Main Thread",
-                    jobstore="On_Trading_Iteration",
-                )
+
+                    print(self.strategy.force_start_immediately)
+                    # Choose the cron trigger for the strategy based on the desired sleep time.
+                    chosen_trigger = self.calculate_strategy_trigger(
+                        force_start_immediately=self.strategy.force_start_immediately
+                    )
+
+                    # Add the on_trading_iteration method to the scheduler with the chosen trigger.
+                    self.scheduler.add_job(
+                            self._on_trading_iteration,
+                            chosen_trigger,
+                            id="OTIM",
+                            name="On Trading Iteration Main Thread",
+                            jobstore="On_Trading_Iteration",
+                    )
+                else:
+                    self.scheduler.resume()
+
+
+
+
 
                 # Set the cron count to the cron count target so that the on_trading_iteration method will be executed
                 # the first time the scheduler runs.
@@ -868,6 +878,8 @@ class StrategyExecutor(Thread):
                     print("Breaking loop because should not continue.")
                     break
                 if is_247_or_should_we_stop:
+                    # shutdown schedule 
+                    self.scheduler.pause()  # Jingfeng
                     print("Breaking loop because it's 24/7 and time to stop.")
                     break
 
@@ -896,13 +908,18 @@ class StrategyExecutor(Thread):
                 if not self._strategy_sleep():
                     break
 
-        print("I am here: before market to close")
+        print("I am here waiting for market to close 1")
         self.strategy.await_market_to_close()
+
         if self.broker.is_market_open():
             self._before_market_closes()  # perhaps the user could set the time of day based on their data that the market closes?
 
+        print("I am here waiting for market to close 2")
         self.strategy.await_market_to_close(timedelta=0)
+
         self._after_market_closes()
+        print("I am here after market close ")
+
 
     def get_next_ap_scheduler_run_time(self):
         # Check if scheduler object exists.

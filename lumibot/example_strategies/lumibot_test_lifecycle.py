@@ -9,14 +9,14 @@ class SwingHigh(Strategy):
     def initialize(self):
         self.set_market('NASDAQ')
         self.sleeptime = "60S"
-        self.minutes_before_closing=2284
+        self.minutes_before_closing=300
        
 
     def before_market_opens(self):
         print("before market open")
 
     def on_trading_iteration(self):
-        print("on trsding iteration")
+        print("on trading iteratio, doing strategy")
 
 
     def before_market_closes(self):
@@ -24,7 +24,7 @@ class SwingHigh(Strategy):
 
 
     def after_market_closes(self):
-        self.log_message("The market is closed")
+        self.log_message("The market is closed, after market closes")
 
     def on_abrupt_closing(self):
         self.log_message("Abrupt closing")

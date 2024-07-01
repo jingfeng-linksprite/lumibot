@@ -741,13 +741,11 @@ class Broker(ABC):
         else:
             return 0
 
-    def sleep(self, sleeptime):
+    def sleep2(self, sleeptime):
         """The broker custom method for sleeping.
         Needs to be overloaded depending whether strategy is
         running live or in backtesting mode"""
-        print("i am here 1")
         time.sleep(sleeptime)
-        print(" i am here 2")
 
     def _await_market_to_open(self, timedelta=None, strategy=None):
         """Executes infinite loop until market opens"""
@@ -760,9 +758,7 @@ class Broker(ABC):
 
             sleeptime = max(0, time_to_open)
             self.logger.info("Sleeping until the market opens")
-            print(sleeptime)
-            #time.sleep(sleeptime)
-            self.sleep(sleeptime)
+            time.sleep(sleeptime)  #Jingfeng
 
 
     def _await_market_to_close(self, timedelta=None, strategy=None):
@@ -775,7 +771,7 @@ class Broker(ABC):
 
             sleeptime = max(0, time_to_close)
             self.logger.info("Sleeping until the market closes")
-            time.sleep(sleeptime)
+            time.sleep(sleeptime)  #Jingfeng
 
     # =========Positions functions==================
     def get_tracked_position(self, strategy, asset):
